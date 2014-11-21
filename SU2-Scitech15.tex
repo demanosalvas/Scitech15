@@ -1,0 +1,130 @@
+% `template.tex', a bare-bones example employing the AIAA class.
+%
+% For a more advanced example that makes use of several third-party
+% LaTeX packages, see `advanced_example.tex', but please read the
+% Known Problems section of the users manual first.
+%
+% Typical processing for PostScript (PS) output:
+%
+%  latex template
+%  latex template   (repeat as needed to resolve references)
+%
+%  xdvi template    (onscreen draft display)
+%  dvips template   (postscript)
+%  gv template.ps   (onscreen display)
+%  lpr template.ps  (hardcopy)
+%
+% With the above, only Encapsulated PostScript (EPS) images can be used.
+%
+% Typical processing for Portable Document Format (PDF) output:
+%
+%  pdflatex template
+%  pdflatex template      (repeat as needed to resolve references)
+%
+%  acroread template.pdf  (onscreen display)
+%
+% If you have EPS figures, you will need to use the epstopdf script
+% to convert them to PDF because PDF is a limmited subset of EPS.
+% pdflatex accepts a variety of other image formats such as JPG, TIF,
+% PNG, and so forth -- check the documentation for your version.
+%
+% If you do *not* specify suffixes when using the graphicx package's
+% \includegraphics command, latex and pdflatex will automatically select
+% the appropriate figure format from those available.  This allows you
+% to produce PS and PDF output from the same LaTeX source file.
+%
+% To generate a large format (e.g., 11"x17") PostScript copy for editing
+% purposes, use
+%
+%  dvips -x 1467 -O -0.65in,0.85in -t tabloid template
+%
+% For further details and support, read the Users Manual, aiaa.pdf.
+
+
+% Try to reduce the number of latex support calls from people who
+% don't read the included documentation.
+%
+%\typeout{}\typeout{If latex fails to find aiaa-tc, read the README file!}
+%
+
+
+\documentclass{aiaa-tc}% insert '[draft]' option to show overfull boxes
+
+%\graphicspath{{Figures/}}% Set graphics path location
+ \usepackage{subfigure}% subcaptions for subfigures
+ \usepackage{subfigmat}% matrices of similar subfigures, aka small mulitples
+ \usepackage{wrapfig}%   wrap figures/tables in text (i.e., Di Vinci style)
+ \usepackage{amsmath, texlogos}
+ \usepackage{mathrsfs}
+ \usepackage{color}
+ \newcommand{\hilight}[1]{\colorbox{yellow}{#1}}
+ \usepackage{epstopdf}
+ \usepackage{epsfig}
+ \usepackage{multirow}
+ \usepackage{color}
+  
+ \title{Residual and grid convergence of compressible turbulent flows using SU$^2$}
+
+ \author{
+     Francisco Palacios\thanks{Engineering Research Associate, Department of Aeronautics \& Astronautics, AIAA Senior Member.},
+     \ Thomas D. Economon\thanks{Post-Doctoral Fellow in Aeronautics \& Astronautics, AIAA Member.},
+     \ David E. Manosalvas\thanks{Ph.D. Candidate, Department of Aeronautics \& Astronautics, AIAA Student Member.}\\,
+     \ Heather Kline\thanks{Ph.D. Candidates (authors in alphabetical order), Department of Aeronautics \& Astronautics, AIAA Student Members.},
+     \ Trent W. Lukaczyk\thanksibid{4},
+     \ Kedar R. Naik\thanksibid{4}, 
+     \ A. Santiago Padr\'on\thanksibid{4},\\
+     \ Brendan Tracey\thanksibid{4},
+     \ Anil Variyar\thanksibid{4},
+   	 \ Andrew Wendorf\thanksibid{4},\\
+   \ and Juan J. Alonso\thanks{Associate Professor, Department of Aeronautics \& Astronautics, AIAA Associate Fellow.}\\
+  {\normalsize\itshape Stanford University, Stanford, CA, 94305, U.S.A.}
+ }
+
+ % Data used by 'handcarry' option if invoked
+ \AIAApapernumber{2015-NUMBER}
+ \AIAAconference{Scitech 2015, 5-9 January 2015, Kissimmee, FL}
+ \AIAAcopyright{\AIAAcopyrightD{YEAR}}
+
+ % Define commands to assure consistent treatment throughout document
+ \newcommand{\eqnref}[1]{(\ref{#1})}
+ \newcommand{\class}[1]{\texttt{#1}}
+ \newcommand{\package}[1]{\texttt{#1}}
+ \newcommand{\file}[1]{\texttt{#1}}
+ \newcommand{\BibTeX}{\textsc{Bib}\TeX}
+
+\begin{document}
+
+\maketitle
+% --------------------------------------
+% Abstract
+% --------------------------------------
+\input{abstract}
+
+% --------------------------------------
+% Intro/motivation
+% --------------------------------------
+\input{introduction}
+
+% --------------------------------------
+% Code architecture
+% --------------------------------------
+%\input{architecture}
+
+% --------------------------------------
+% Spatial & temporal discretization
+% --------------------------------------
+%\input{discretization}
+
+% --------------------------------------
+% Spatial & temporal discretization
+% --------------------------------------
+%\input{linearsolvers}
+
+% --------------------------------------
+% Abstract
+% --------------------------------------
+%\input{validation}
+
+
+
+\end{document}
