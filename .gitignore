@@ -1,0 +1,18 @@
+# Unix
+*~
+
+# latex
+*.aux
+*.log
+/*.pdf
+*.bbl
+*.blg
+
+# archives
+*.gz
+*.zip
+*.tar
+
+# Mac
+.DS_Store
+
