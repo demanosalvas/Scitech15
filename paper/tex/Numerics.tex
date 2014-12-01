@@ -1,5 +1,149 @@
 % !TEX root = ../SU2-Scitech15.tex
 
 \subsection*{Numerical methods}
-Describe the numerical method used for the adventive fluxes, the viscous fluxes and the turbulence model. Highlight that all are 2nd order. Describe the time stepping scheme\cite{Palacios:2014,PalaciosEconomon:2014}.
-Quick description on how the limiters work and how the limiter characteristic distance has been chosen and scaled to fit for all the mesh sizes \cite{Venkatakrishnan:1993}.
+%Describe the numerical method used for the adventive fluxes,[x] the viscous fluxes[x] and the turbulence model. Highlight that all are 2nd order. Describe the time stepping scheme\cite{Palacios:2014,PalaciosEconomon:2014}.
+SU2 has capabilities for multiple numerical methods. The methods used here were the second-order Roe Scheme with a Venkatakrishnan limiter, a GMRES linear solver with LU-SGS preconditioning. Turbulence was modelled using the SA scheme. The limiter uses a tunable coefficient and a characteristic length. The value of the limiter coefficient was varied between 0.1 and 10.0. The limiter characteristic distance was chosen as 0.1 for the mesh with 257 points on the surface based on the recommendations of Venkatakrishan\cite{Venkatakrishnan:1993}. This value was scaled for the other meshes based on the number of surface points. The characteristic distance using this method can be found using $\Delta x_{char} = 25.7 c  / n_p $, where $n_p$ is the number of points on the surface and $c$ is the chord length. 
+
+%Quick description on how the limiters work and how the limiter characteristic distance has been chosen and scaled to fit for all the mesh sizes \cite{Venkatakrishnan:1993}.
+%\cite{barth1989}
+\subsubsection*{Venkatakrishnan Second-Order Limiter}
+Limiters were first introduced for unstructured grids by Barth and Jespersen\cite{barth1989}. A limiter scheme finds a value $\Phi_i$ that limits the gradient in the piecewise-linear reconstruction of the solution. Limiters reduce unwanted oscillations in the solution, however tuning is required to maintain convergence and accuracy. The second-order reconstruction is shown in Equation~\ref{eqn:LimitedReconstr}, where $\vec{x}_i$ is the reference location, $u_i$ is the pointwise value at $x_i$, and $U_i(x)$ is the reconstructed distribution within cell $i$.
+\begin{equation}\label{eqn:LimitedReconstr}
+U_i(\vec{x}) = \bar{u}_i + \Phi_i \nabla u_i \cdot (\vec{x}-\vec{x}_i ), \Phi\in [0,1]
+\end{equation}
+In Equation~\ref{eqn:VenkatakrishnanLim}, from Venkatakrishnan\cite{Venkatakrishnan:1993}, $\Delta x$ is a characteristic length, $K$ is the tunable limiter coefficient, and $\epsilon^2 = (K\Delta x)^3$. $\Delta_-=U(x_{i+1/2})-u_i$ and $\Delta_+ = u_i^{max}-u_i$. 
+\begin{equation}\label{eqn:VenkatakrishnanLim}
+\Phi_{i+1/2} = \frac{1}{\Delta_-}\left[ \frac{(\Delta_+^2+\epsilon^2)\Delta_-^2\Delta_-^2\Delta_+}{\Delta_+^2+2\Delta_-^2+\Delta_-\Delta_++\epsilon^2}\right]
+\end{equation}
+In smooth regions, where $\epsilon^2$ dominates,  $\Phi_{i+1/2}$ reduces to 1 and provides no limiting. This method is expected to ameliorate convergence over other limiters. 
+%-----------------------------------------------------------
+\subsubsection*{Spatial Integration via the Finite Volume Method}
+%-----------------------------------------------------------
+
+Partial Differential Equations (PDEs) in SU$^2$ are discretized using a finite volume method~\cite{barth95, hirsch1984,quarteroni97, jameson01, leveque02, wesseling00, jameson:1995a, jameson:1995b, toro1999} with a standard edge-based structure on a dual grid with control volumes constructed using a median-dual, vertex-based scheme. Median-dual control volumes are formed by connecting the centroids, face, and edge-midpoints of all cells sharing the particular node. After integrating the governing equations over a control volume and applying the divergence theorem, the semi-discretized, integral form of a typical PDE (such as the RANS equations above) is given by,
+\begin{equation} \label{eq:DiscretizedEq}
+\int_{\Omega_i}{\frac{\partial{U}}{\partial{t}}}\,d\Omega + \sum_{j \in \mathcal{N}(i)}(\tilde{F}_{c_{ij}}+\tilde{F}_{v_{ij}})\Delta{S}_{ij} -Q|\Omega_i| = \int_{\Omega_i}{\frac{\partial{U}}{\partial{t}}}\,d\Omega + R_i(U) = 0,
+\end{equation}
+ 
+where $U$ is the vector of state variables, and $R_i(U)$ is the numerical residual representing the integration of the spatial terms. $\tilde{F}_{c_{ij}}$ and $\tilde{F}_{v_{ij}}$ are the projected numerical approximations of the convective and viscous fluxes, respectively, and $Q$ is a source term. $\Delta{S}_{ij}$ is the area of the face associated with the edge $ij$, $\Omega_i$ is the volume of the control volume, and $\mathcal{N}(i)$ is the set of neighboring nodes to node $i$.
+
+The convective and viscous fluxes are evaluated at the midpoint of an edge. The numerical solver loops through all of the edges in the primal mesh in order to calculate these fluxes and then integrates them to evaluate the residual at every node in the numerical grid. The convective fluxes can be discretized using centered or upwind schemes in SU2. Several numerical schemes have been implemented (JST~\cite{jameson1981}, Roe~\cite{roe1981}, AUSM~\cite{liou93}, HLLC~\cite{toro1999}, Roe-Turkel~\cite{turkel_1}, to name a few), and the code architecture allows for the rapid implementation of new schemes. Limiters are available for use with higher-order reconstructions for the upwind convective schemes. In order to evaluate the viscous fluxes using a finite volume method, flow quantities and their first derivatives are required at the faces of the control volumes. The gradients of the flow variables are calculated using either a Green-Gauss or weighted least-squares method at all grid nodes and then averaged to obtain the gradients at the cell faces. Source terms are approximated using piecewise constant reconstruction within each of the finite volume cells.
+
+\subsubsection{Integration of convective fluxes}
+
+The convective fluxes can be discretized using central or upwind methods in SU2. Several numerical schemes have been implemented (JST, Lax-Friedrich, Roe, AUSM, HLLC, Roe-Turkel), but this section will focus on two classic numerical schemes (Roe and JST).
+
+The flux-difference-splitting scheme by Roe~\cite{roe81} evaluates the convective fluxes from flow quantities reconstructed separately on both sides of the face of the control volume from values at the surrounding nodes:
+\begin{equation} \label{eq:roe}
+\tilde{F}_{c_{ij}} = \tilde{F}(U_i, U_j) = \left(\frac{\vec{F}^c_i +\vec{F}^c_j}{2}\right)\cdot \vec{n}_{ij} - \frac{1}{2} P|\Lambda|P^{-1}(U_i - U_j), 
+\end{equation}
+where $\vec{n}_{ij}$ is the outward unit normal associated with the face between nodes $i$ and $j$, $U_i$ is the vector of the conserved variables at point $i$ and $\vec{F^c_i}$ is the convective flux at node $i$. $P$ is the matrix of eigenvectors of the flux Jacobian matrix, constructed using the Roe averaged variables and projected in the $\vec{n}_{ij}$ direction, and $|\Lambda|$ is a diagonal matrix with entries corresponding to the absolute value of the eigenvalues of the flux Jacobian matrix. This discretization is first-order accurate in space. Second-order accuracy is easily achieved via reconstruction of variables on the cell interfaces by using a Monotone Upstream-centered Schemes for Conservation Laws (MUSCL) approach~\cite{Leer1979} with gradient limitation.
+
+
+The JST scheme~\cite{jameson81} uses a blend of two types of artificial dissipation that are computed using the differences in the undivided Laplacians (higher-order) of connecting nodes and the difference in the conserved variables (lower-order) on the connecting nodes. The two levels of dissipation are blended by using the typical pressure switch for triggering lower-order dissipation in the vicinity of shock waves. The final expression for the numerical flux using the JST method on unstructured meshes is:
+
+\begin{equation}
+ \tilde{F}_{c_{ij}} = \tilde{F}(U_i, U_j) = \vec F^c \left( \frac{U_i +U_j}{2} \right) \cdot \vec n_{ij}  - d_{ij}.
+\label{eq:JST}
+\end{equation}
+The artificial dissipation $d_{ij}$ along the edge connecting nodes $i$ and $j$ can be expressed as
+\begin{equation}
+d_{ij} =\left( \varepsilon_{ij}^{(2)}(U_j-U_i) - \varepsilon_{ij}^{(4)} (\nabla^2 U_j - \nabla^2 U_i) \right) \varphi_{ij} \lambda_{ij}, 
+\end{equation}
+where the undivided Laplacians, local spectral radius, stretching in the grid and pressure switches are computed as 
+\begin{eqnarray}
+\nabla^2 U_i &=& \sum_{k \in \mathcal{N}(i)}(U_k-U_i), \\
+\lambda_{ij} &=& (|u_{ij} \cdot \vec n_{ij}| + c_{ij}) \Delta S, \quad \lambda_{i} = \sum_{k \in \mathcal{N}(i)} \lambda_{ik},\\
+\varphi_{ij} &=& 4 \frac{\varphi_i \varphi_j}{\varphi_i + \varphi_j}, \quad \varphi_i = \left( \frac{\lambda_i}{4 \lambda_{ij}} \right)^p, \\
+\varepsilon_{ij}^{(2)} &=& \kappa^{(2)} s_2 \left(  \left| \sum_{k \in \mathcal{N}(i)} (p_k-p_i) \right| / \ \sum_{k \in \mathcal{N}(i)} (p_k+p_i) \right), \quad \varepsilon_{ij}^{(4)} = s_4 \max \left(0,\kappa^{(4)}-\varepsilon_{ij}^{(2)}\right),
+\end{eqnarray}
+where $\mathcal{N}(i)$ represents the set of neighboring points to node $i$,  $p_i$ is the pressure at node $i$, $s_2$ and $s_4$ are stretching parameters and $\kappa^{(2)}$, $\kappa^{(4)}$ are adjustable parameters.
+
+\subsubsection{Integration of viscous fluxes}
+
+In order to evaluate the viscous fluxes using a finite volume method, flow quantities and their first derivatives are required at the faces of the control volumes. The values of the flow variables, including the velocity components, the dynamic viscosity $\mu$ and the heat conduction coefficient $k$, are averaged at the cell faces in SU2. 
+
+The gradients of the flow variables are calculated using either a Green-Gauss or least-squares method at all grid nodes and then averaged to obtain the gradients at the cell faces. The following correction~\cite{weiss97} is applied in order to reduce the truncation error of the scheme:
+\begin{equation}
+\nabla \phi \cdot \vec n = \frac{\phi_{j}-\phi_i}{|x_{j}-x_i|}\alpha_f + \frac{1}{2}(\nabla \phi|_i + \nabla \phi|_j)\cdot(\vec n-\alpha_f \vec s),
+\end{equation}
+where $\vec {n}$ is the face normal, $\vec s$ is the normalized vector connecting the cell centroid across the face, $|x_{j}-x_i|$ is the distance between node $i$ and $j$ and $\alpha _f$ is chosen to be the dot product $\alpha_f = \vec s\cdot \vec {n}$. Again, the gradients $\nabla \phi|_i$ at node $i$ are computed using either the Green-Gauss or least-squares theorems.
+
+A Finite Element Method (FEM) is also available to numerically evaluate the Laplacian operator. Finite element methods are based upon approximations to a variational formulation of the problem. A variational formulation requires the introduction of a space of trial functions, $\mathcal{T}=\left\{V(t,\vec x)\right\}$, and a space of weighting functions, $\mathcal{W}=\left\{W(t,\vec x)\right\}$. The problem consists of finding $V(t,\vec x)$ in $\mathcal{T}$ satisfying the problem boundary conditions, such that
+\begin{equation} \label{ere}
+\int_{\Omega}{W^T\left( \nabla^2 V \right)\,d\Omega}=0.
+\end{equation}
+
+To produce an approximate solution to the variational problem, a grid of finite elements is constructed on the domain, $\Omega$. It will be assumed that the discretization employs $p$ nodes. Finite-dimensional subspaces $\mathcal{T}^{(p)}$ and $\mathcal{W}^{(p)}$ of the trial and weighting function spaces, respectively, are defined by
+\begin{equation} \label{deefg}
+\mathcal{T}^{(p)}=\left\{V^{(p)}(\vec x)\,|\,V^{(p)}=\sum^p_{J=1}{V_J N_J(\vec x)}\right\}, \; \mathcal{W}^{(p)}=\left\{W^{(p)}(\vec x)\,|\,W^{(p)}=\sum^p_{J=1}{a_J N_J(\vec x)}\right\},
+\end{equation}
+where $V_J$ is the value of $V^{(p)}$ at node $J$. On the other hand, $a_1, a_2, \ldots, a_p$ are constant and $N_J(\vec x)$ is the piecewise linear trial function associated with node $J$. We now apply the finite element approximation by discretizing the domain of the problem into elements and introducing functions which interpolate the solution over nodes that compose the elements. The Galerkin approximation is determined by applying the variational formulation of Eq.~\ref{ere} in the following form: find $V^{(p)}$ in $\mathcal{T}^{(p)}$, satisfying the problem boundary conditions, such that
+\begin{equation} \label{asdf}
+\int_{\Omega}{N^T_I \left(\nabla^2 V\right) \,d\Omega} = 0,
+\end{equation}
+for $I=1,2,...,p$. The form assumed for $V^{(p)}$ in Eq.~\ref{deefg} can now be inserted into the left hand side of Eq.~\ref{asdf} and the result can be written as
+\begin{equation}
+\int_{\Omega}{N^T_I \left(\sum^p_{J=1}V_J \nabla^2 N_J \right) \,d\Omega}=\sum^p_{J=1} V_J \left(\int_{\Omega}{N^T_I \nabla^2 N_J \,d\Omega}\right)=0.
+\end{equation}
+Applying the divergence theorem gives
+\begin{equation}
+\sum^p_{J=1}  V_J \left( \int_{\Gamma}{N^T_I\left( \nabla N_J\cdot \vec \nu \right)\,d\Gamma}- \int_{\Omega}{ \nabla N^T_I\cdot \nabla N_J\,d\Omega}\right)= 0,
+\end{equation}
+where $\vec \nu$ is the outward unit normal associated with the control volume surface and the boundary integral disappears unless we are computing a boundary element with non-homogeneous Neumann conditions ($I$ is an exterior node). The result at a typical interior node $I$ is
+\begin{equation}
+\sum_{E\in I}\sum_{J\in E} V_J\left ( \int_{\Omega_E}{ \nabla N^T_I\cdot \nabla N_J\,d\Omega}\right)=0,
+\end{equation}
+where the first summation extends over the elements $E$ in the numerical grid which contain node $I$ and the second summation extends over nodes $J$ of the elements $E$. $\Omega_E$ is the portion of $\Omega$ which is represented by element $E$.
+
+\subsubsection{Source term integration}
+
+Source terms are approximated using piecewise constant reconstruction within each of the finite volume cells. The source terms plays a fundamental role in plasma simulations (chemical reactions), free-surface problems (gravity effects), or in the formulation of turbulence and transition models.
+
+%-----------------------------------------------------------
+\subsection{Time integration for steady simulation}
+%-----------------------------------------------------------
+It is well known that Eq.~\ref{eq:DiscretizedEq} has to be valid over the whole time interval, so one has to make the choice of evaluating $R_i(U)$ either at time $t^{n}$ (explicit methods) or $t^{n+1}$ (implicit methods). Focusing on the implicit integration (SU2 also has a Runge-Kutta explicit method), the easiest way to discretize the system is by using an implicit Euler scheme which can be written as
+\begin{equation}
+\int_{\Omega_i}{\frac{\partial{U}}{\partial{t}}}\,d\Omega + R_i(U) \approx |\Omega_i| \frac{\mathrm{d}U_i}{\mathrm{d}t} + R_i(U) = 0 \quad \rightarrow \quad \frac{|\Omega_i^n|}{\Delta t_i^n} \Delta U_i^n = - R_i(U^{n+1}),
+\label{eq:Implicit_Euler}
+\end{equation}
+where $\Delta U_i^n = U_i^{n+1} - U_i^n$. However, the residuals at time $n+1$ are unknown, and linearization about $t^n$ is needed:
+\begin{equation}
+R_i(U^{n+1})  =  R_i(U^n) + \frac{\partial R_i (U^n)}{\partial t} \Delta t_i^n + \mathcal{O}(\Delta t^2) = R_i(U^n) + \sum_{j \in \mathcal{N}(i)} \frac{\partial R_i (U^n)}{\partial U_j} \Delta U_j^n + \mathcal{O}(\Delta t^2).
+\end{equation}
+Finally, the following linear system should be solved to find the solution update ($\Delta U_i^n$),
+\begin{equation}\label{linear_system}
+\left( \frac{|\Omega_i|}{\Delta t_i^n} \delta_{ij} + \frac{\partial R_i (U^n)}{\partial U_j} \right) \cdot \Delta U_j^n = -R_i(U^n),
+\end{equation}
+where if a flux $\tilde F_{ij}$ has a stencil of points $\{i, j\}$, then contributions are made to the Jacobian at four points:
+\begin{equation}
+\frac{\partial R}{\partial U} := \frac{\partial R}{\partial U} + \left[
+\begin{array}{ccccc}
+\ddots & & & & \\
+ & \frac{\partial \tilde{F}_{ij}}{\partial U_i} & \cdots & \frac{\partial \tilde{F}_{ij}}{\partial U_j} & \\
+ & \vdots & \ddots & \vdots & \\
+ & -\frac{\partial \tilde{F}_{ij}}{\partial U_i} & \cdots & -\frac{\partial \tilde{F}_{ij}}{\partial U_j} & \\
+ & & & & \ddots 
+\end{array}
+\right].
+\end{equation}
+
+Note that, despite implicit schemes being unconditionally stable in theory, a specific value of $\Delta t_i^n$ is needed to relax the problem. SU2 uses a local-time-stepping technique to accelerate convergence to a steady state. Local-time-stepping allows each cell in the mesh to advance at a different local time step. Calculation of the local time step requires the estimation of the eigenvalues and first-order approximations to the Jacobians at every node $i$ according to
+\begin{equation}
+\Delta t_i=N_{CFL} \min{\left(\frac{|\Omega_i|}{\lambda^{conv}_i},\frac{|\Omega_i|}{\lambda^{visc}_{i}}\right)},
+\end{equation}
+where $N_{CFL}$ is the Courant-Friedrichs-Lewy (CFL) number, $|\Omega_i|$ is the volume of the cell $i$ and $\lambda^{conv}_i$ is the integrated convective spectral radius~\cite{eliasson02} computed as 
+\begin{equation}
+\lambda^{conv}_i=\sum_{j \in \mathcal{N}(i)}(|\vec u_{ij}\cdot\vec n_{ij}|+c_{ij})\Delta S,
+\end{equation}
+where $\vec u_{ij} = (\vec u_i + \vec u_j)/2$, and $c_{ij} = (c_i + c_j)/2$ denote the velocity and the speed of sound at the cell face. $\vec n_{ij}$ denotes the normal direction of the control surface and $\Delta S$, its area. On the other hand, the viscous spectral radius $\lambda^{visc}_{i}$ is computed as
+\begin{equation}
+\lambda^{visc}_{i} = \sum_{j \in \mathcal{N}(i)}C \frac{\mu_{ij}}{\rho_{ij}} S_{ij}^2,
+\end{equation}
+where $C$ is a constant, $\mu_{ij}$ is the sum of the laminar and eddy viscosities in a turbulent calculation and $\rho_{ij}$ is the density evaluated at the midpoint of the edge $ij$.
+
+
+
+
+

@@ -1,4 +1,20 @@
 % !TEX root = ../SU2-Scitech15.tex
 
 \subsection*{Linear Solver}
-Describe how the Generalized minimum residual (GMRES) works and the limits at which we are using it for this cases. Describe the use of the Lower-Upper Symmetric-Gauss-Seidel (LU-SGS).
+The linear solver used for the results presented here was General Minimum Residual (GMRES) with Lower-Upper Symmetric-Gauss-Seidel (LU-SGS). 
+
+
+%Describe how the Generalized minimum residual (GMRES) works and the limits at which we are using it for this cases. Describe the use of the Lower-Upper Symmetric-Gauss-Seidel (LU-SGS).
+
+
+The SU2 framework includes the implementation of several linear solvers for solving Eq.~\ref{linear_system}. Specifically, the following methods are available:
+\begin{itemize}
+\item The Lower-Upper Symmetric-Gauss-Seidel (LU-SGS) method~\cite{yoon88, jameson81b, jameson87}. This is a stationary iterative method that is based on a measurement of the error in the result (the residual) which is used to form a ``correction equation".
+\item The Generalized Minimal Residual (GMRES) method~\cite{Saad:1986}, which approximates the solution by the vector in a Krylov subspace with minimal residual. The Arnoldi iteration is used to find this vector.
+\item The Biconjugate Gradient Stabilized  (BiCGSTAB) method~\cite{Vorst1992}, also a Krylov subspace method. It is a variant of the biconjugate gradient method (BiCG) and has faster and smoother convergence properties than the original BiCG.
+\end{itemize}
+
+
+Due to the nature of most iterative methods/relaxation schemes, high-frequency errors are usually well damped, but low-frequency errors (global error spanning the larger solution domain) are less damped by the action of iterative methods that have a stencil with a local area of influence. To combat this, SU2 contains an agglomeration multigrid implementation that generates effective convergence at all length scales of a problem by employing a sequence of grids of varying resolution (SU2 can automatically generate the coarse grids from the provided fine grid at runtime). Simply stated, the main idea is to accelerate the convergence of the numerical solution of a set of equations by computing corrections to the fine-grid solutions on coarser grids and applying this idea recursively~\cite{jameson86, mavriplis1998, mavriplis1995, borzi-2003, palacios-2011}. 
+
+Preconditioning is the application of a transformation to the original system that makes it more suitable for numerical solution~\cite{pierce-1997}.
