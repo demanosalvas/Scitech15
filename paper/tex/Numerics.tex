@@ -2,15 +2,17 @@
 
 \subsection*{Numerical methods}
 %Describe the numerical method used for the adventive fluxes,[x] the viscous fluxes[x] and the turbulence model. Highlight that all are 2nd order. Describe the time stepping scheme\cite{Palacios:2014,PalaciosEconomon:2014}.
-In this section, the main numerical algorithms of SU2 will be described with a particular emphasis on the methods used to produce the results in this paper. The methods used here were the second-order Roe Scheme with a Venkatakrishnan limiter, a GMRES linear solver with LU-SGS preconditioning. Turbulence was modelled using the SA scheme. The limiter uses a tunable coefficient and a characteristic length. The value of the limiter coefficient was varied between 0.1 and 10.0. The limiter characteristic distance was chosen as 0.1 for the mesh with 257 points on the surface based on the recommendations of Venkatakrishan\cite{Venkatakrishnan:1993}. This value was scaled for the other meshes based on the number of surface points. The characteristic distance using this method can be found using $\Delta x_{char} = 25.7 c  / n_p $, where $n_p$ is the number of points on the surface and $c$ is the chord length. 
+In this section, the main numerical algorithms of SU2 will be described with a particular emphasis on the methods used to produce the results in this paper. The convective and viscous fluxes were calculated using a second-order Roe scheme. The S-A turbulence model was used, with variables convected using a second-order upwind method. Venkatakrishnan's limiter is used. Implicit local time-stepping is used to converge the problem to a steady-state solution, and the linear system is solved using the GMRES method with a maximum error tolerance of $\mathcal{O}(10^{-10})$ for each nonlinear iteration of the flow solver. LU-SGS preconditioning was used.
+
+The limiter uses a tunable coefficient and a characteristic length. The value of the limiter coefficient was varied between 0.1 and 10.0, along with variations in the CFL number to find appropriate values for each mesh. The limiter characteristic distance was chosen as 0.1 for the mesh with 257 points on the surface based on the recommendations of Venkatakrishan\cite{Venkatakrishnan:1993}. This value was scaled for the other meshes based on the number of surface points. The characteristic distance using this method can be found using $\Delta x_{char} = 25.7 c  / n_p $, where $n_p$ is the number of points on the surface and $c$ is the chord length. 
 
 \subsubsection*{Venkatakrishnan Second-Order Limiter}
-Limiters were first introduced for unstructured grids by Barth and Jespersen\cite{barth1989}. A limiter scheme finds a value $\Phi_i$ that limits the gradient in the piecewise-linear reconstruction of the solution. Limiters reduce unwanted oscillations in the solution, however tuning is required to maintain convergence and accuracy. The second-order reconstruction is shown in Equation~\ref{eqn:LimitedReconstr}, where $\vec{x}_i$ is the reference location, $u_i$ is the pointwise value at $x_i$, and $U_i(x)$ is the reconstructed distribution within cell $i$.
-\begin{equation}\label{eqn:LimitedReconstr}
+Limiters were developed for unstructured grids by Barth and Jespersen\cite{barth1989}. A limiter scheme finds a value $\Phi_i$ that limits the gradient in the piecewise-linear reconstruction of the solution. Limiters reduce unwanted oscillations in the solution, however tuning is required to maintain convergence and accuracy. The second-order reconstruction is shown in Equation~\ref{eq:LimitedReconstr}, where $\vec{x}_i$ is the reference location, $u_i$ is the pointwise value at $x_i$, and $U_i(x)$ is the reconstructed distribution within cell $i$.
+\begin{equation}\label{eq:LimitedReconstr}
 U_i(\vec{x}) = \bar{u}_i + \Phi_i \nabla u_i \cdot (\vec{x}-\vec{x}_i ), \Phi\in [0,1]
 \end{equation}
-In Equation~\ref{eqn:VenkatakrishnanLim}, from Venkatakrishnan\cite{Venkatakrishnan:1993}, $\Delta x$ is a characteristic length, $K$ is the tunable limiter coefficient, and $\epsilon^2 = (K\Delta x)^3$. $\Delta_-=U(x_{i+1/2})-u_i$ and $\Delta_+ = u_i^{max}-u_i$. 
-\begin{equation}\label{eqn:VenkatakrishnanLim}
+In Equation~\ref{eq:VenkatakrishnanLim}, from Venkatakrishnan\cite{Venkatakrishnan:1993}, $\Delta x$ is a characteristic length, $K$ is the tunable limiter coefficient, and $\epsilon^2 = (K\Delta x)^3$. $\Delta_-=U(x_{i+1/2})-u_i$ and $\Delta_+ = u_i^{max}-u_i$. 
+\begin{equation}\label{eq:VenkatakrishnanLim}
 \Phi_{i+1/2} = \frac{1}{\Delta_-}\left[ \frac{(\Delta_+^2+\epsilon^2)\Delta_-^2\Delta_-^2\Delta_+}{\Delta_+^2+2\Delta_-^2+\Delta_-\Delta_++\epsilon^2}\right]
 \end{equation}
 In smooth regions, where $\epsilon^2$ dominates,  $\Phi_{i+1/2}$ reduces to 1 and provides no limiting. This method is expected to ameliorate convergence over other limiters. 
@@ -29,33 +31,14 @@ The convective and viscous fluxes are evaluated at the midpoint of an edge. The 
 
 \subsubsection*{Integration of convective fluxes}
 
-The convective fluxes can be discretized using central or upwind methods in SU2. Several numerical schemes have been implemented (JST, Lax-Friedrich, Roe, AUSM, HLLC, Roe-Turkel), but this section will focus on two classic numerical schemes (Roe and JST).
+The convective fluxes can be discretized using central or upwind methods in SU2. Several numerical schemes have been implemented (JST, Lax-Friedrich, Roe, AUSM, HLLC, Roe-Turkel), but this section will focus on the numerical schemes used for this study (Roe).
 
-The flux-difference-splitting scheme by Roe~\cite{roe81} evaluates the convective fluxes from flow quantities reconstructed separately on both sides of the face of the control volume from values at the surrounding nodes:
+The flux-difference-splitting scheme by Roe~\cite{roe1981} evaluates the convective fluxes from flow quantities reconstructed separately on both sides of the face of the control volume from values at the surrounding nodes:
 \begin{equation} \label{eq:roe}
 \tilde{F}_{c_{ij}} = \tilde{F}(U_i, U_j) = \left(\frac{\vec{F}^c_i +\vec{F}^c_j}{2}\right)\cdot \vec{n}_{ij} - \frac{1}{2} P|\Lambda|P^{-1}(U_i - U_j), 
 \end{equation}
 where $\vec{n}_{ij}$ is the outward unit normal associated with the face between nodes $i$ and $j$, $U_i$ is the vector of the conserved variables at point $i$ and $\vec{F^c_i}$ is the convective flux at node $i$. $P$ is the matrix of eigenvectors of the flux Jacobian matrix, constructed using the Roe averaged variables and projected in the $\vec{n}_{ij}$ direction, and $|\Lambda|$ is a diagonal matrix with entries corresponding to the absolute value of the eigenvalues of the flux Jacobian matrix. This discretization is first-order accurate in space. Second-order accuracy is easily achieved via reconstruction of variables on the cell interfaces by using a Monotone Upstream-centered Schemes for Conservation Laws (MUSCL) approach~\cite{Leer1979} with gradient limitation.
 
-
-The JST scheme~\cite{jameson81} uses a blend of two types of artificial dissipation that are computed using the differences in the undivided Laplacians (higher-order) of connecting nodes and the difference in the conserved variables (lower-order) on the connecting nodes. The two levels of dissipation are blended by using the typical pressure switch for triggering lower-order dissipation in the vicinity of shock waves. The final expression for the numerical flux using the JST method on unstructured meshes is:
-
-\begin{equation}
- \tilde{F}_{c_{ij}} = \tilde{F}(U_i, U_j) = \vec F^c \left( \frac{U_i +U_j}{2} \right) \cdot \vec n_{ij}  - d_{ij}.
-\label{eq:JST}
-\end{equation}
-The artificial dissipation $d_{ij}$ along the edge connecting nodes $i$ and $j$ can be expressed as
-\begin{equation}
-d_{ij} =\left( \varepsilon_{ij}^{(2)}(U_j-U_i) - \varepsilon_{ij}^{(4)} (\nabla^2 U_j - \nabla^2 U_i) \right) \varphi_{ij} \lambda_{ij}, 
-\end{equation}
-where the undivided Laplacians, local spectral radius, stretching in the grid and pressure switches are computed as 
-\begin{eqnarray}
-\nabla^2 U_i &=& \sum_{k \in \mathcal{N}(i)}(U_k-U_i), \\
-\lambda_{ij} &=& (|u_{ij} \cdot \vec n_{ij}| + c_{ij}) \Delta S, \quad \lambda_{i} = \sum_{k \in \mathcal{N}(i)} \lambda_{ik},\\
-\varphi_{ij} &=& 4 \frac{\varphi_i \varphi_j}{\varphi_i + \varphi_j}, \quad \varphi_i = \left( \frac{\lambda_i}{4 \lambda_{ij}} \right)^p, \\
-\varepsilon_{ij}^{(2)} &=& \kappa^{(2)} s_2 \left(  \left| \sum_{k \in \mathcal{N}(i)} (p_k-p_i) \right| / \ \sum_{k \in \mathcal{N}(i)} (p_k+p_i) \right), \quad \varepsilon_{ij}^{(4)} = s_4 \max \left(0,\kappa^{(4)}-\varepsilon_{ij}^{(2)}\right),
-\end{eqnarray}
-where $\mathcal{N}(i)$ represents the set of neighboring points to node $i$,  $p_i$ is the pressure at node $i$, $s_2$ and $s_4$ are stretching parameters and $\kappa^{(2)}$, $\kappa^{(4)}$ are adjustable parameters.
 
 \subsubsection*{Integration of viscous fluxes}
 

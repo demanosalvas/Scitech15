@@ -1,0 +1,4 @@
+TITLE = "SU2 Simulation"
+VARIABLES = "Iteration","CLift","CDrag","CSideForce","CMx","CMy","CMz","CFx","CFy","CFz","CL/CD","Res_Flow[0]","Res_Flow[1]","Res_Flow[2]","Res_Flow[3]","Res_Flow[4]","Res_Turb[0]","Linear_Solver_Iterations","Time(min)"
+ZONE T= "Convergence history"
+           0, 2.0058648720, 0.8722117877, 0.0000000000, 0.0000000000, 0.0000000000, 0.5453207553, 0.3233358610, 2.1632617059, 0.0000000000, 2.2997451998, -3.5770619286, -14.4160535951, -14.3869171890, -3.0310420698, 0.0000000000, -10.2922291503, 4.0000000000, 0.0125224312

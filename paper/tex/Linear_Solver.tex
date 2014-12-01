@@ -3,8 +3,9 @@
 \subsection*{Linear Solver}
 The linear solver used for the results presented here was General Minimum Residual (GMRES) with a Lower-Upper Symmetric-Gauss-Seidel (LU-SGS) preconditioner. 
 
-%Describe how the Generalized minimum residual (GMRES) works and the limits at which we are using it for this cases. Describe the use of the Lower-Upper Symmetric-Gauss-Seidel (LU-SGS).
+Preconditioning is the application of a transformation to the original system that makes it more suitable for numerical solution~\cite{pierce-1997}.
 
+%Describe how the Generalized minimum residual (GMRES) works and the limits at which we are using it for this cases. Describe the use of the Lower-Upper Symmetric-Gauss-Seidel (LU-SGS).
 
 The SU2 framework includes the implementation of several linear solvers for solving Eq.~\ref{linear_system}. Specifically, the following methods are available:
 \begin{itemize}
@@ -13,4 +14,4 @@ The SU2 framework includes the implementation of several linear solvers for solv
 \item The Biconjugate Gradient Stabilized  (BiCGSTAB) method~\cite{Vorst1992}, also a Krylov subspace method. It is a variant of the biconjugate gradient method (BiCG) and has faster and smoother convergence properties than the original BiCG.
 \end{itemize}
 
-Preconditioning is the application of a transformation to the original system that makes it more suitable for numerical solution~\cite{pierce-1997}.
+
