@@ -63,7 +63,7 @@ where $\mathcal{N}(i)$ represents the set of neighboring points to node $i$,  $p
 
 In order to evaluate the viscous fluxes using a finite volume method, flow quantities and their first derivatives are required at the faces of the control volumes. The values of the flow variables, including the velocity components, the dynamic viscosity $\mu$ and the heat conduction coefficient $k$, are averaged at the cell faces in SU2. 
 
-The gradients of the flow variables are calculated using either a Green-Gauss or least-squares method at all grid nodes and then averaged to obtain the gradients at the cell faces. The following correction~\cite{weiss97} is applied in order to reduce the truncation error of the scheme:
+The gradients of the flow variables are calculated using either a Green-Gauss or least-squares method at all grid nodes and then averaged to obtain the gradients at the cell faces. The following correction~\cite{weiss1997} is applied in order to reduce the truncation error of the scheme:
 \begin{equation}
 \nabla \phi \cdot \vec n = \frac{\phi_{j}-\phi_i}{|x_{j}-x_i|}\alpha_f + \frac{1}{2}(\nabla \phi|_i + \nabla \phi|_j)\cdot(\vec n-\alpha_f \vec s),
 \end{equation}
@@ -133,7 +133,7 @@ Note that, despite implicit schemes being unconditionally stable in theory, a sp
 \begin{equation}
 \Delta t_i=N_{CFL} \min{\left(\frac{|\Omega_i|}{\lambda^{conv}_i},\frac{|\Omega_i|}{\lambda^{visc}_{i}}\right)},
 \end{equation}
-where $N_{CFL}$ is the Courant-Friedrichs-Lewy (CFL) number, $|\Omega_i|$ is the volume of the cell $i$ and $\lambda^{conv}_i$ is the integrated convective spectral radius~\cite{eliasson02} computed as 
+where $N_{CFL}$ is the Courant-Friedrichs-Lewy (CFL) number, $|\Omega_i|$ is the volume of the cell $i$ and $\lambda^{conv}_i$ is the integrated convective spectral radius~\cite{eliasson2002} computed as 
 \begin{equation}
 \lambda^{conv}_i=\sum_{j \in \mathcal{N}(i)}(|\vec u_{ij}\cdot\vec n_{ij}|+c_{ij})\Delta S,
 \end{equation}

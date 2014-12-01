@@ -10,7 +10,7 @@ The linear solver used for the results presented here was General Minimum Residu
 The SU2 framework includes the implementation of several linear solvers for solving Eq.~\ref{linear_system}. Specifically, the following methods are available:
 \begin{itemize}
 \item The Lower-Upper Symmetric-Gauss-Seidel (LU-SGS) method~\cite{yoon88, jameson81b, jameson87}. This is a stationary iterative method that is based on a measurement of the error in the result (the residual) which is used to form a ``correction equation".
-\item The Generalized Minimal Residual (GMRES) method~\cite{Saad:1986}, which approximates the solution by the vector in a Krylov subspace with minimal residual. The Arnoldi iteration is used to find this vector.
+\item The Generalized Minimal Residual (GMRES) method~\cite{saad1986}, which approximates the solution by the vector in a Krylov subspace with minimal residual. The Arnoldi iteration is used to find this vector.
 \item The Biconjugate Gradient Stabilized  (BiCGSTAB) method~\cite{Vorst1992}, also a Krylov subspace method. It is a variant of the biconjugate gradient method (BiCG) and has faster and smoother convergence properties than the original BiCG.
 \end{itemize}
 
