@@ -1,5 +1,27 @@
 % !TEX root = ../SU2-Scitech15.tex
 
 \section{Introduction}
+One of the advantages of using an implicit solver is the ability to choose higher Courant–Friedrichs–Lewy (CFL) numbers while maintaining stability. This feature allows for the use of local time stepping which translates into a faster rate of convergence, allowing each one of the cells to evolve at its maximum time stepping rate independently of the heterogeneity of the computational domain. This capability is particularly useful when dealing with Navier-Stoles simulations on which the cells used to model the boundary layer are significantly smaller than the cells representing the farfield. 
 
-Talk about the importance of having convergence limits and information about the correlations between CFL and limiters. Importance of having a document that shows this correlations.
+Talk about the transient that develops due to the local time stepping scheme.
+
+Talk about the usefulness of limiters in low mach number flows and how this tool helps preserve stability as well as the effect that it has in the flow solution.
+
+Talk about the NACA 0012 case and describe the usefulness of this case and why it is a canonical case for CFD. 
+
+Describe the challenge that this case presents when trying to achieve convergence and the reasons for this.
+
+Mention the importance of a speedy convergence based on computational cost and mention how there are many parameters that can be changed in order to speed up convergence.
+
+Mention that we are changing the limiter value and the CFL number and the reasoning behind these choices.
+
+Talk about the setup that we are using, describe the setup in detail
+
+Describe the outcome of the paper and how this has the potential to provide a guide to extrapolate to more complex simulations and geometries.
+
+The paper is laid out as follows. 
+
+Describe all the section in the paper
+
+
+%Talk about the importance of having convergence limits and information about the correlations between CFL and limiters. Importance of having a document that shows this correlations.
