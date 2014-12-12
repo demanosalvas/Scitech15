@@ -2,8 +2,20 @@
 
 \section{Physical Problem}
 
-Describe the physical problem that we are solving, the types of meshes that we are using and the physical conditions at which we are solving it. 
-Describe how this problem is valuable for understanding the limits of the code and how this article will map the convergence of the code and the influence of the limiters and the CFL to minimize the number of iterations.
+This is study we are simulating two-dimensional flow over a NACA 0012 airfoil under essentially incompressible free-stream conditions as specified by the AIAA Turbulence Model Benchmarking Working Group (TMBWG).  We are solving the Reynolds-averaged Navier-Stokes (RANS) equation. The S-A  turbulence models is used for all cases, and the free-stream conditions are shown in Table~\ref{tab:naca0012_runconditions}. 
+
+\begin{wraptable}{r}{5.5cm}
+  \begin{center}
+  \begin{tabular}{||c|c||} \hline
+    $M_\infty$ & $0.15$ \\ \hline 
+    $Re_c$     & $6M$ \\ \hline
+    $T_\infty$ & $300K$ \\ \hline
+    $\alpha$ & $0^{\circ}$, $10^{\circ}$, $15^{\circ}$ \\ \hline
+    $\mathcal{R}_{\tilde\nu}(U)$ & S-A \\ \hline
+  \end{tabular}
+  \caption{NACA 0012 free-stream conditions.} \label{tab:naca0012_runconditions}
+  \end{center}
+\end{wraptable} 
 
 \input{./tex/Modeling}
 \input{./tex/Numerics}
