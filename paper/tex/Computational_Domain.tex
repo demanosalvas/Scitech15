@@ -1,0 +1,23 @@
+% !TEX root = ../SU2-Scitech15.tex
+
+
+\section{Computational Domain}
+
+For this paper, the simulations are run on a family of five structured meshes ranging from extremely coarse to fine. These are stated in table ~\ref{tab:naca0012_mesh}. As described in the AIAA Turbulence Model Resources online, the meshes are all C-meshes with the farfield located at a distance of 500 chord lengths from the airfoil.  The mesh spacing near the boundary in the wall normal direction meets the $y+<=1$ condition.
+
+\begin{wraptable}{r}{5.5cm}
+  \begin{center}
+  \begin{tabular}{||c|c||} \hline
+    $Mesh No.$ &  Mesh points\\ \hline \hline
+    $G0$ &  113 X 33\\ \hline \hline
+    $G1$ & 225 X 65 \\ \hline 
+    $G2$     & 449 X 129 \\ \hline
+    $G3$ & 897 X 257 \\ \hline
+    $G4$ & 1793 X 513 \\ \hline
+  \end{tabular}
+  \caption{NACA 0012 meshs.} \label{tab:naca0012_mesh}
+  \end{center}
+\end{wraptable} 
+
+
+Characteristic based farfield boundary conditions are applied to the outer boundary of the mesh and an adiabatic wall boundary condition is applied to the airfoil surface.
