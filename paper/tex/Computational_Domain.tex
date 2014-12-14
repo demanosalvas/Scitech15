@@ -5,19 +5,18 @@
 
 For this paper, the simulations are run on a family of five structured meshes ranging from extremely coarse to fine. These are stated in table ~\ref{tab:naca0012_mesh}. As described in the AIAA Turbulence Model Resources online, the meshes are all C-meshes with the farfield located at a distance of 500 chord lengths from the airfoil.  The mesh spacing near the boundary in the wall normal direction meets the $y+<=1$ condition.
 
-\begin{wraptable}{r}{5.5cm}
-  \begin{center}
-  \begin{tabular}{||c|c||} \hline
-    $Mesh No.$ &  Mesh points\\ \hline \hline
-    $G0$ &  113 X 33\\ \hline \hline
-    $G1$ & 225 X 65 \\ \hline 
-    $G2$     & 449 X 129 \\ \hline
-    $G3$ & 897 X 257 \\ \hline
-    $G4$ & 1793 X 513 \\ \hline
+\begin{table}
+  \centering
+  \begin{tabular}{ccccccc} \\ \toprule
+  Grid & npoints x 1000 & points airfoil & y+ & \#points in BL & growth rate  \\ \midrule
+  G0 (113 x 33) & 3.73 & 65 & 1.44 & 14 & 1.749\\
+  G1 (225 x 65) & 14.6 & 129 & 0.72 & 27 & 1.319\\
+  G2 (449 x 129) & 58 & 257 & 0.36 & 54 & 1.148\\
+  G3 (897 x 257) & 231 & 513 & 0.18 & 107 & 1.071\\
+  G4 (1793 x 513) & 920 & 1025 & 0.09 & 212 & 1.035\\  \bottomrule
   \end{tabular}
-  \caption{NACA 0012 meshs.} \label{tab:naca0012_mesh}
-  \end{center}
-\end{wraptable} 
-
+  \caption{Rough description of the grids. Double check when we get the grids from Francisco.  I(Santiago) calculated y+ and \#points in BL assuming a flat plate at the given Reynolds. The growth rate was backed out of the description of the grids in NASA. The grids might be extruded differently. In any case this is a table that can be used as a sample.}
+  \label{tab:naca0012_mesh}
+\end{table}
 
 Characteristic based farfield boundary conditions are applied to the outer boundary of the mesh and an adiabatic wall boundary condition is applied to the airfoil surface.
