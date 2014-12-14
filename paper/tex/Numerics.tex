@@ -32,7 +32,7 @@ The convective and viscous fluxes are evaluated at the midpoint of an edge. The 
 
 \subsubsection*{Integration of convective fluxes}
 
-The convective fluxes can be discretized using central or upwind methods in SU2. Several numerical schemes have been implemented (JST, Lax-Friedrich, Roe, AUSM, HLLC, Roe-Turkel), but this section will focus on the numerical schemes used for this study (Roe).
+The convective fluxes can be discretized using central or upwind methods in SU2. Several numerical schemes have been implemented (JST, Lax-Friedrich, Roe, AUSM, HLLC, Roe-Turkel), but this section will focus on the numerical schemes used for this study, the Roe scheme. Details on the other methds can be found in
 
 The flux-difference-splitting scheme by Roe~\cite{roe1981} evaluates the convective fluxes from flow quantities reconstructed separately on both sides of the face of the control volume from values at the surrounding nodes:
 \begin{equation} \label{eq:roe}
@@ -45,38 +45,13 @@ where $\vec{n}_{ij}$ is the outward unit normal associated with the face between
 
 In order to evaluate the viscous fluxes using a finite volume method, flow quantities and their first derivatives are required at the faces of the control volumes. The values of the flow variables, including the velocity components, the dynamic viscosity $\mu$ and the heat conduction coefficient $k$, are averaged at the cell faces in SU2. 
 
-The gradients of the flow variables are calculated using either a Green-Gauss or least-squares method at all grid nodes and then averaged to obtain the gradients at the cell faces. The following correction~\cite{weiss1997} is applied in order to reduce the truncation error of the scheme:
+The gradients of the flow variables can be calculated using either a Green-Gauss or least-squares method at all grid nodes and then averaged to obtain the gradients at the cell faces. The method used for this work was the weighted least-squares. The following correction~\cite{weiss1997} is applied in order to reduce the truncation error of the scheme:
 \begin{equation}
 \nabla \phi \cdot \vec n = \frac{\phi_{j}-\phi_i}{|x_{j}-x_i|}\alpha_f + \frac{1}{2}(\nabla \phi|_i + \nabla \phi|_j)\cdot(\vec n-\alpha_f \vec s),
 \end{equation}
-where $\vec {n}$ is the face normal, $\vec s$ is the normalized vector connecting the cell centroid across the face, $|x_{j}-x_i|$ is the distance between node $i$ and $j$ and $\alpha _f$ is chosen to be the dot product $\alpha_f = \vec s\cdot \vec {n}$. Again, the gradients $\nabla \phi|_i$ at node $i$ are computed using either the Green-Gauss or least-squares theorems.
+where $\vec {n}$ is the face normal, $\vec s$ is the normalized vector connecting the cell centroid across the face, $|x_{j}-x_i|$ is the distance between node $i$ and $j$ and $\alpha _f$ is chosen to be the dot product $\alpha_f = \vec s\cdot \vec {n}$.
 
-A Finite Element Method (FEM) is also available to numerically evaluate the Laplacian operator. Finite element methods are based upon approximations to a variational formulation of the problem. A variational formulation requires the introduction of a space of trial functions, $\mathcal{T}=\left\{V(t,\vec x)\right\}$, and a space of weighting functions, $\mathcal{W}=\left\{W(t,\vec x)\right\}$. The problem consists of finding $V(t,\vec x)$ in $\mathcal{T}$ satisfying the problem boundary conditions, such that
-\begin{equation} \label{ere}
-\int_{\Omega}{W^T\left( \nabla^2 V \right)\,d\Omega}=0.
-\end{equation}
-
-To produce an approximate solution to the variational problem, a grid of finite elements is constructed on the domain, $\Omega$. It will be assumed that the discretization employs $p$ nodes. Finite-dimensional subspaces $\mathcal{T}^{(p)}$ and $\mathcal{W}^{(p)}$ of the trial and weighting function spaces, respectively, are defined by
-\begin{equation} \label{deefg}
-\mathcal{T}^{(p)}=\left\{V^{(p)}(\vec x)\,|\,V^{(p)}=\sum^p_{J=1}{V_J N_J(\vec x)}\right\}, \; \mathcal{W}^{(p)}=\left\{W^{(p)}(\vec x)\,|\,W^{(p)}=\sum^p_{J=1}{a_J N_J(\vec x)}\right\},
-\end{equation}
-where $V_J$ is the value of $V^{(p)}$ at node $J$. On the other hand, $a_1, a_2, \ldots, a_p$ are constant and $N_J(\vec x)$ is the piecewise linear trial function associated with node $J$. We now apply the finite element approximation by discretizing the domain of the problem into elements and introducing functions which interpolate the solution over nodes that compose the elements. The Galerkin approximation is determined by applying the variational formulation of Eq.~\ref{ere} in the following form: find $V^{(p)}$ in $\mathcal{T}^{(p)}$, satisfying the problem boundary conditions, such that
-\begin{equation} \label{asdf}
-\int_{\Omega}{N^T_I \left(\nabla^2 V\right) \,d\Omega} = 0,
-\end{equation}
-for $I=1,2,...,p$. The form assumed for $V^{(p)}$ in Eq.~\ref{deefg} can now be inserted into the left hand side of Eq.~\ref{asdf} and the result can be written as
-\begin{equation}
-\int_{\Omega}{N^T_I \left(\sum^p_{J=1}V_J \nabla^2 N_J \right) \,d\Omega}=\sum^p_{J=1} V_J \left(\int_{\Omega}{N^T_I \nabla^2 N_J \,d\Omega}\right)=0.
-\end{equation}
-Applying the divergence theorem gives
-\begin{equation}
-\sum^p_{J=1}  V_J \left( \int_{\Gamma}{N^T_I\left( \nabla N_J\cdot \vec \nu \right)\,d\Gamma}- \int_{\Omega}{ \nabla N^T_I\cdot \nabla N_J\,d\Omega}\right)= 0,
-\end{equation}
-where $\vec \nu$ is the outward unit normal associated with the control volume surface and the boundary integral disappears unless we are computing a boundary element with non-homogeneous Neumann conditions ($I$ is an exterior node). The result at a typical interior node $I$ is
-\begin{equation}
-\sum_{E\in I}\sum_{J\in E} V_J\left ( \int_{\Omega_E}{ \nabla N^T_I\cdot \nabla N_J\,d\Omega}\right)=0,
-\end{equation}
-where the first summation extends over the elements $E$ in the numerical grid which contain node $I$ and the second summation extends over nodes $J$ of the elements $E$. $\Omega_E$ is the portion of $\Omega$ which is represented by element $E$.
+More detail on the methods available for viscous flux integration in SU2 can be found in Reference~\citen{palacios2013}. 
 %-----------------------------------------------------------
 \subsubsection*{Source term integration}
 %-----------------------------------------------------------
@@ -85,8 +60,7 @@ Source terms are approximated using piecewise constant reconstruction within eac
 %-----------------------------------------------------------
 \subsection*{Time integration for steady simulation}
 %-----------------------------------------------------------
-%\cite{Palacios:2014,PalaciosEconomon:2014}
-It is well known that Eq.~\ref{eq:DiscretizedEq} has to be valid over the whole time interval, so one has to make the choice of evaluating $R_i(U)$ either at time $t^{n}$ (explicit methods) or $t^{n+1}$ (implicit methods). Focusing on the implicit integration (SU2 also has a Runge-Kutta explicit method), the easiest way to discretize the system is by using an implicit Euler scheme which can be written as
+This section will cover the time integration used for steady simulations in SU2. More detail on this topic including the methods for unsteady simulation is available in References \citen{Palacios:2014,PalaciosEconomon:2014, and palacios2013}. It is well known that Eq.~\ref{eq:DiscretizedEq} has to be valid over the whole time interval, so one has to make the choice of evaluating $R_i(U)$ either at time $t^{n}$ (explicit methods) or $t^{n+1}$ (implicit methods). Focusing on the implicit integration (SU2 also has a Runge-Kutta explicit method), the easiest way to discretize the system is by using an implicit Euler scheme which can be written as
 \begin{equation}
 \int_{\Omega_i}{\frac{\partial{U}}{\partial{t}}}\,d\Omega + R_i(U) \approx |\Omega_i| \frac{\mathrm{d}U_i}{\mathrm{d}t} + R_i(U) = 0 \quad \rightarrow \quad \frac{|\Omega_i^n|}{\Delta t_i^n} \Delta U_i^n = - R_i(U^{n+1}),
 \label{eq:Implicit_Euler}
@@ -126,25 +100,3 @@ where $\vec u_{ij} = (\vec u_i + \vec u_j)/2$, and $c_{ij} = (c_i + c_j)/2$ deno
 \end{equation}
 where $C$ is a constant, $\mu_{ij}$ is the sum of the laminar and eddy viscosities in a turbulent calculation and $\rho_{ij}$ is the density evaluated at the midpoint of the edge $ij$.
 
-
-
-%-----------------------------------------------------------
-\subsubsection*{Spalart-Allmaras (S-A) Model:}
-%-----------------------------------------------------------
-In the case of the one-equation Spalart-Allmaras~\cite{spalart1992} turbulence model, the turbulent viscosity is computed as
-\begin{equation} \label{eq nutur}
-\mu _{tur}=\rho \hat{\nu}f_{v1},\quad f_{v1}=\frac{\chi ^{3}}{\chi ^{3}+c_{v1}^{3}}\mbox{,}\quad \chi =\frac{%
-\hat{\nu}}{\nu }\mbox{,}\quad \nu =\frac{\mu _{dyn}}{\rho }.
-\end{equation}
-The new variable $\hat \nu$ is obtained by solving a transport equation where the convective, viscous, and source terms are given as follows:
-\begin{equation} \label{eq:tersa0}
-\vec F^{c} =  \vec v\hat{\nu},\quad
-\vec F^{v} =  - \frac{\nu +\hat{\nu}}{\sigma }\nabla\hat{\nu},\quad
-Q =  c_{b1}\hat{S}\hat{\nu}-c_{w1}f_{w}\left( \frac{\hat{\nu}}{d_{S}}\right) ^{2}+\frac{c_{b2}}{\sigma } |\nabla \hat{\nu}|^{2},
-\end{equation}
-where the production term $\hat S$ is defined as $\hat{S} = |\vec \omega| +\frac{\hat{\nu}}{\kappa ^{2}d_{S}^{2}}f_{v2}$ , $\vec \omega= \nabla \times \vec v$ is the fluid vorticity, $d_{S}$ is the distance to the nearest wall, and $f_{v2}=1-\frac{\chi }{1+\chi f_{v1}}$. The function $f_{w}$ is computed as $f_{w}=g\left[ \frac{1+c_{w3}^{6}}{g^{6}+c_{w3}^{6}}\right] ^{1/6}$, where $g=r+c_{w2}(r^{6}-r)$ and $r=\frac{\hat{\nu}}{\hat{S}\kappa ^{2}d_{S}^{2}}$. Finally, the set of closure constants for the model is given by 
-\begin{equation}
-\sigma =2/3,\;  c_{b1}=0.1355,\; c_{b2}=0.622,\; \kappa =0.41, \;c_{w1}=\frac{c_{b1}}{\kappa^2}+\frac{1+c_{b2}}{\sigma}, \; c_{w2}=0.3, \; c_{w3}=2, \; c_{v1}=7.1. 
-\end{equation}
-
-The physical meaning of the far-field boundary condition for the turbulent viscosity is the imposition of some fraction of the laminar viscosity at the far-field. On viscous walls, $\hat{\nu}$ is set to zero, corresponding to the absence of turbulent eddies very near to the wall.
