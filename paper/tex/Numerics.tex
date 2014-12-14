@@ -32,7 +32,7 @@ The convective and viscous fluxes are evaluated at the midpoint of an edge. The 
 
 \subsubsection*{Integration of convective fluxes}
 
-The convective fluxes can be discretized using central or upwind methods in SU2. Several numerical schemes have been implemented (JST, Lax-Friedrich, Roe, AUSM, HLLC, Roe-Turkel), but this section will focus on the numerical schemes used for this study, the Roe scheme. Details on the other methds can be found in
+The convective fluxes can be discretized using central or upwind methods in SU2. Several numerical schemes have been implemented (JST, Lax-Friedrich, Roe, AUSM, HLLC, Roe-Turkel), but this section will focus on the numerical schemes used for this study, the Roe scheme. Details on other methods can be found in Reference ~\citen{palacios2013}.
 
 The flux-difference-splitting scheme by Roe~\cite{roe1981} evaluates the convective fluxes from flow quantities reconstructed separately on both sides of the face of the control volume from values at the surrounding nodes:
 \begin{equation} \label{eq:roe}
@@ -43,15 +43,11 @@ where $\vec{n}_{ij}$ is the outward unit normal associated with the face between
 
 \subsubsection*{Integration of viscous fluxes}
 
-In order to evaluate the viscous fluxes using a finite volume method, flow quantities and their first derivatives are required at the faces of the control volumes. The values of the flow variables, including the velocity components, the dynamic viscosity $\mu$ and the heat conduction coefficient $k$, are averaged at the cell faces in SU2. 
-
-The gradients of the flow variables can be calculated using either a Green-Gauss or least-squares method at all grid nodes and then averaged to obtain the gradients at the cell faces. The method used for this work was the weighted least-squares. The following correction~\cite{weiss1997} is applied in order to reduce the truncation error of the scheme:
+In order to evaluate the viscous fluxes using a finite volume method, flow quantities and their first derivatives are required at the faces of the control volumes. The values of the flow variables, including the velocity components, the dynamic viscosity $\mu$ and the heat conduction coefficient $k$, are averaged at the cell faces in SU2. The gradients of the flow variables can be calculated using either a Green-Gauss or least-squares method at all grid nodes and then averaged to obtain the gradients at the cell faces. The method used for this work was the weighted least-squares. The following correction~\cite{weiss1997} is applied in order to reduce the truncation error of the scheme:
 \begin{equation}
 \nabla \phi \cdot \vec n = \frac{\phi_{j}-\phi_i}{|x_{j}-x_i|}\alpha_f + \frac{1}{2}(\nabla \phi|_i + \nabla \phi|_j)\cdot(\vec n-\alpha_f \vec s),
 \end{equation}
-where $\vec {n}$ is the face normal, $\vec s$ is the normalized vector connecting the cell centroid across the face, $|x_{j}-x_i|$ is the distance between node $i$ and $j$ and $\alpha _f$ is chosen to be the dot product $\alpha_f = \vec s\cdot \vec {n}$.
-
-More detail on the methods available for viscous flux integration in SU2 can be found in Reference~\citen{palacios2013}. 
+where $\vec {n}$ is the face normal, $\vec s$ is the normalized vector connecting the cell centroid across the face, $|x_{j}-x_i|$ is the distance between node $i$ and $j$ and $\alpha _f$ is chosen to be the dot product $\alpha_f = \vec s\cdot \vec {n}$. More detail on the methods available for viscous flux integration in SU2 can be found in Reference~\citen{palacios2013}. 
 %-----------------------------------------------------------
 \subsubsection*{Source term integration}
 %-----------------------------------------------------------
@@ -60,7 +56,7 @@ Source terms are approximated using piecewise constant reconstruction within eac
 %-----------------------------------------------------------
 \subsection*{Time integration for steady simulation}
 %-----------------------------------------------------------
-This section will cover the time integration used for steady simulations in SU2. More detail on this topic including the methods for unsteady simulation is available in References \citen{Palacios:2014,PalaciosEconomon:2014, and palacios2013}. It is well known that Eq.~\ref{eq:DiscretizedEq} has to be valid over the whole time interval, so one has to make the choice of evaluating $R_i(U)$ either at time $t^{n}$ (explicit methods) or $t^{n+1}$ (implicit methods). Focusing on the implicit integration (SU2 also has a Runge-Kutta explicit method), the easiest way to discretize the system is by using an implicit Euler scheme which can be written as
+This section will cover the time integration used for steady simulations in SU2. More detail on this topic including the methods for unsteady simulation is available in previous publications \cite{palacios2013,Palacios:2014,PalaciosEconomon:2014 }. It is well known that Eq.~\ref{eq:DiscretizedEq} has to be valid over the whole time interval, so one has to make the choice of evaluating $R_i(U)$ either at time $t^{n}$ (explicit methods) or $t^{n+1}$ (implicit methods). Focusing on the implicit integration (SU2 also has a Runge-Kutta explicit method), the easiest way to discretize the system is by using an implicit Euler scheme which can be written as
 \begin{equation}
 \int_{\Omega_i}{\frac{\partial{U}}{\partial{t}}}\,d\Omega + R_i(U) \approx |\Omega_i| \frac{\mathrm{d}U_i}{\mathrm{d}t} + R_i(U) = 0 \quad \rightarrow \quad \frac{|\Omega_i^n|}{\Delta t_i^n} \Delta U_i^n = - R_i(U^{n+1}),
 \label{eq:Implicit_Euler}
