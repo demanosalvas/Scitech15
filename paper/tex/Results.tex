@@ -24,18 +24,19 @@ As can be expected, the Cp reflects that as the grid resolution increases Cp con
 Although it can be seen the that to achieve the correct solution, meshes such as G3 and G4 are adequate, there is a significant computational cost that has to be considered due to the high resolution involved. Keeping in mind the objective of this article to explore different alternatives to make the use of coarser grids for design purposes, various limiter values have been explored. 
 
 \begin{figure}[]
-  \begin{subfigmatrix}{2}
-    \subfigure[$C_d$ Vs. limiter at $0^\circ$ Angle of Attack.]{\includegraphics{limiter_vs_drag_0deg.pdf}}
-    \label{fig:lim_drag_AoA0}
-    \subfigure[$C_l$ Vs. limiter at $0^\circ$ Angle of Attack.]{\includegraphics{limiter_vs_lift_0deg.pdf}}
-    \label{fig:lim_lift_AoA0}
-  \end{subfigmatrix}
-  \begin{subfigmatrix}{2}
-      \subfigure[$C_d$ Vs. limiter at $10^\circ$ Angle of Attack.]{\includegraphics{limiter_vs_drag_10deg.pdf}}
-      \label{fig:lim_drag_AoA10}
-      \subfigure[$C_l$ Vs. limiter at $10^\circ$ Angle of Attack.]{\includegraphics{limiter_vs_lift_10deg.pdf}}
-      \label{fig:lim_lift_AoA10}
-    \end{subfigmatrix}
+%%% Not all this data was in the Google doc to be able to do the plot. %%%
+%  \begin{subfigmatrix}{2}
+%    \subfigure[$C_d$ Vs. limiter at $0^\circ$ Angle of Attack.]{\includegraphics{limiter_vs_drag_0deg.pdf}}
+%    \label{fig:lim_drag_AoA0}
+%    \subfigure[$C_l$ Vs. limiter at $0^\circ$ Angle of Attack.]{\includegraphics{limiter_vs_lift_0deg.pdf}}
+%    \label{fig:lim_lift_AoA0}
+%  \end{subfigmatrix}
+%  \begin{subfigmatrix}{2}
+%      \subfigure[$C_d$ Vs. limiter at $10^\circ$ Angle of Attack.]{\includegraphics{limiter_vs_drag_10deg.pdf}}
+%      \label{fig:lim_drag_AoA10}
+%      \subfigure[$C_l$ Vs. limiter at $10^\circ$ Angle of Attack.]{\includegraphics{limiter_vs_lift_10deg.pdf}}
+%      \label{fig:lim_lift_AoA10}
+%    \end{subfigmatrix}
     \begin{subfigmatrix}{2}
         \subfigure[$C_d$ Vs. limiter at $15^\circ$ Angle of Attack.]{\includegraphics{limiter_vs_drag_15deg.pdf}}
         \label{fig:lim_drag_AoA15}
@@ -78,7 +79,7 @@ The second section that comes out of the results represented on Figure~\ref{fig:
 
 \begin{figure}[]
   \centering
-    \includegraphics[width=0.5\textwidth]{Cp_vs_lim_gridG2_AOA15.pdf}
+    \includegraphics[width=0.5\textwidth]{Cp_vs_Lim_G2_deg15.pdf}
     \caption{Cp plots of the NACA 0012 represented by grid G2 at AoA = $15^\circ$.}
     \label{fig:cp_vs_lim}
 \end{figure}
@@ -87,15 +88,15 @@ The third and final group that can be identified in Figure~\ref{fig:lim_grid} is
 
 \begin{figure}[]
   \begin{subfigmatrix}{2}
-    \subfigure[limiter Vs. $C_d$ for the G0 mesh.]{\includegraphics{limiter_vs_drag_15deg_G0.pdf}}
+    \subfigure[limiter Vs. $C_d$ for the G0 mesh.]{\includegraphics{G0_limiter_effect_drag15deg.pdf}}
     \label{fig:lim_cd_AoA15_G0}
-    \subfigure[limiter Vs. $C_l$ for the G0 mesh.]{\includegraphics{limiter_vs_lift_15deg_G0.pdf}}
+    \subfigure[limiter Vs. $C_l$ for the G0 mesh.]{\includegraphics{G0_limiter_effect_lift15deg.pdf}}
     \label{fig:lim_cl_AoA15_G0}
   \end{subfigmatrix}
   \begin{subfigmatrix}{2}
-  	\subfigure[limiter Vs. $C_d$ for the G1 mesh.]{\includegraphics[width=.5\textwidth]{limiter_vs_drag_15deg_G1.pdf}}
+  	\subfigure[limiter Vs. $C_d$ for the G1 mesh.]{\includegraphics[width=.5\textwidth]{G1_limiter_effect_drag15deg.pdf}}
     \label{fig:lim_cd_AoA15_G1}
-    \subfigure[limiter Vs. $C_l$ for the G1 mesh.]{\includegraphics[width=.5\textwidth]{limiter_vs_lift_15deg_G1.pdf}}
+    \subfigure[limiter Vs. $C_l$ for the G1 mesh.]{\includegraphics[width=.5\textwidth]{G1_limiter_effect_lift15deg.pdf}}
     \label{fig:lim_cl_AoA15_G1}
   \end{subfigmatrix}
   
@@ -107,19 +108,27 @@ The G0 mesh is too coarse to be able to simulate the flow past a NACA 0012 accur
 
 As can be clearly seen from the results show, the limiter plays a significant role in the behabior and final convergence value for coarse meshes, and to better understand the reason for this effect, the limiter value contour plot has been analyzed. 
 
+%\begin{figure}[]
+%  \begin{subfigmatrix}{2}
+%    \subfigure[G0 mesh.]{\includegraphics{lim_contour_Lim_0_1_deg15_GridG0.pdf}}
+%    \label{fig:contour_G0}
+%    \subfigure[G1 mesh.]{\includegraphics{lim_contour_Lim_0_1_deg15_GridG1.pdf}}
+%    \label{fig:contour_G1}
+%  \end{subfigmatrix}
+%  \begin{subfigmatrix}{1}
+%  	\subfigure[G2 mesh.]{\includegraphics[width=.5\textwidth]{lim_contour_Lim_0_1_deg15_GridG2.pdf}}
+%    \label{fig:contour_G2}
+%  \end{subfigmatrix}
+
 \begin{figure}[]
   \begin{subfigmatrix}{2}
-    \subfigure[G0 mesh.]{\includegraphics{lim_contour_Lim_0_1_deg15_GridG0.pdf}}
+    \subfigure[G0 mesh.]{\includegraphics{lim_contour_Lim_0_1_deg15_GridG0.png}}
     \label{fig:contour_G0}
-    \subfigure[G1 mesh.]{\includegraphics{lim_contour_Lim_0_1_deg15_GridG1.pdf}}
-    \label{fig:contour_G1}
-  \end{subfigmatrix}
-  \begin{subfigmatrix}{1}
-  	\subfigure[G2 mesh.]{\includegraphics[width=.5\textwidth]{lim_contour_Lim_0_1_deg15_GridG2.pdf}}
+  	\subfigure[G2 mesh.]{\includegraphics[width=.5\textwidth]{lim_contour_Lim_0_1_deg15_GridG2.png}}
     \label{fig:contour_G2}
   \end{subfigmatrix}
   
-  \caption{Contour plot of the Venkatakrishnan limiter$\phi$ for flow at AoA = $15^\circ$ with a limiter value of 0.1. }
+  \caption{Contour plot of the Venkatakrishnan limiter$\phi$ (u-velocity) for flow at AoA = $15^\circ$ with a limiter value of 0.1. }
   \label{fig:limiter_contour}
 \end{figure}
 
