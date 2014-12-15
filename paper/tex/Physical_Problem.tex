@@ -1,8 +1,8 @@
 % !TEX root = ../SU2-Scitech15.tex
 
-\section{Physical Problem}
+\section{Physical Problem and Numerical Tools}
 
-This is study we are simulating two-dimensional flow over a NACA 0012 airfoil under essentially incompressible free-stream conditions as specified by the AIAA Turbulence Model Benchmarking Working Group (TMBWG).  We are solving the Reynolds-averaged Navier-Stokes (RANS) equation. The S-A  turbulence models is used for all cases, and the free-stream conditions are shown in Table~\ref{tab:naca0012_runconditions}. 
+This study focuses on the simulation of two-dimensional flow over a NACA 0012 airfoil under essentially incompressible free-stream conditions as specified by the AIAA Turbulence Model Benchmarking Working Group (TMBWG).  We are solving the Reynolds-averaged Navier-Stokes (RANS) equation by using the Roe 2nd-order upwind scheme and the chosen turulence model for this study is SA. A summary of the free-stream conditions are shown in Table~\ref{tab:naca0012_runconditions}. 
 
 \begin{wraptable}{r}{5.5cm}
   \begin{center}
@@ -11,17 +11,19 @@ This is study we are simulating two-dimensional flow over a NACA 0012 airfoil un
     $Re_c$     & $6M$ \\ \hline
     $T_\infty$ & $300K$ \\ \hline
     $\alpha$ & $0^{\circ}$, $10^{\circ}$, $15^{\circ}$ \\ \hline
-    $\mathcal{R}_{\tilde\nu}(U)$ & S-A \\ \hline
+    $\mathcal{R}_{\tilde\nu}(U)$ & SA \\ \hline
   \end{tabular}
   \caption{NACA 0012 free-stream conditions.} \label{tab:naca0012_runconditions}
   \end{center}
 \end{wraptable} 
 
+**A description of the problems that we are running should go here**
+
+
 \input{./tex/Modeling}
 \input{./tex/Numerics}
 \input{./tex/Linear_Solver}
-\input{./tex/Optimization}
-Most of this information can be found in the previous SU$^2$ papers \cite{Palacios:2014,PalaciosEconomon:2014}
+%\input{./tex/Optimization}
 \input{./tex/Computational_Domain}
 
 
